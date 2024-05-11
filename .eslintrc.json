@@ -1,0 +1,28 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": ["airbnb-base", "prettier"],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "rules": {
+    "semi": ["off", "always"],
+    "linebreak-style": 0,
+    "indent": ["error", 2, { "SwitchCase": 1 }],
+    "no-console": "error",
+    "max-classes-per-file": "off",
+    "no-underscore-dangle": "off",
+    "no-restricted-syntax": "off"
+
+    // На windows это правило выглядело бы как
+    // "linebreak-style": ["warn", "windows"]
+    // А на unix системах
+    // "linebreak-style": ["warn", "unix"]
+    // А это вариант сам определяющий окружение
+    // Для его использования нужно изменить расширение файла на .js
+    //"linebreak-style": ["error", (process.platform === "win32" ? "windows" : "unix")]
+  }
+}
