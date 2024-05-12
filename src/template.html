@@ -10,11 +10,21 @@
       href="./assets/img/favicon/icons8-checklist-glyph-96.png"
     />
   </head>
-  <body class="bg-main-bg">
-    <div class="container">
-      <header></header>
-      <nav></nav>
-      <main></main>
+  <body class="bg-main-bg p-[15px]">
+    <div class="container bg-main p-[15px] rounded-xl">
+      <header>Time Tracker</header>
+      <main class="flex items-center">
+
+        <div data-timer-output class="p-3 min-w-fit w-[100px] rounded-md bg-main-bg shadow-grey mr-10"></div>
+        
+        <button
+          data-start-stop-btn
+          class="bg-main-bg p-1 rounded-full w-[30px] h-[30px] shadow-grey-btn active:shadow-grey-btn-small active:translate-x-[1px] active:translate-y-[1px] hover:text-font-color transition-all"
+        >
+          >
+        </button>
+        
+      </main>
     </div>
   </body>
 </html>

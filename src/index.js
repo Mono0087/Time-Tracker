@@ -1,4 +1,6 @@
 import './CSS/style.css'
+import './app/app'
+import './app/modules/DOM'
 
 // CACHE DOM /////////////////////////////////////////////////////////////
 const container = document.querySelector('.container')
