@@ -1,6 +1,6 @@
 import './CSS/style.css'
-import './app/app'
-import './app/modules/DOM'
+import app from './app/app'
+import DOM from './app/modules/DOM'
 
 // CACHE DOM /////////////////////////////////////////////////////////////
 const container = document.querySelector('.container')
@@ -11,6 +11,6 @@ const main = container.querySelector('main')
 
 
 // INIT //////////////////////////////////////////////////////////////////
-
+window.app = app
 
 // BIND EVENTS ///////////////////////////////////////////////////////////
