@@ -1,13 +1,16 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { format } from 'date-fns'
-import { isSameDay } from 'date-fns/isSameDay'
+import { isToday } from 'date-fns/isToday'
 import StorageAPI from './modules/StorageAPI'
+
+// Functions
 
 // Storage
 const Storage = new StorageAPI('localStorage')
 
 let sessionStorage = Storage.load()
 let autosaveIntervalId
+let startTimeValue = 0
 
 if (!sessionStorage) {
   const firstSave = {
@@ -17,7 +20,7 @@ if (!sessionStorage) {
         date: format(new Date(), 'HH:mm:ss yyyy/MM/dd'),
         occupations: [{ name: 'default', time: 0 }],
       },
-    ], // TODO Set the default progress for the first day
+    ],
   }
   Storage.save(firstSave)
   sessionStorage = firstSave
@@ -31,53 +34,25 @@ const timerState = {
   occupation: sessionStorage.occupations[0],
 }
 
-const _updateStorage = () => {
+let dayProgress = sessionStorage.days[sessionStorage.days.length - 1]
+
+const _updateDayProgress = () => {
+  if (!isToday(dayProgress.date)) {
+    const newDayProgress = {
+      date: format(new Date(), 'HH:mm:ss yyyy/MM/dd'),
+      occupations: [],
+    }
+    sessionStorage.days.push(newDayProgress)
+    dayProgress = newDayProgress
+  }
+}
+
+// Internal methods
+const _update = () => {
+  _updateDayProgress()
   Storage.save(sessionStorage)
 }
-
-const _autosave = () => {
-  const lastDay = sessionStorage.days[sessionStorage.days.length - 1]
-  const isToday = isSameDay(
-    new Date(),
-    sessionStorage.days[sessionStorage.days.length - 1].date
-  )
-  timerState.timeInterval = Math.round(
-    (new Date() - timerState.startTime) / 1_000
-  )
-
-  const occupation = lastDay.occupations.find(
-    (occ) => occ.name === timerState.occupation.name
-  )
-  if (isToday) {
-    if (!occupation) {
-      lastDay.occupations.push({
-        name: timerState.occupation.name,
-        time: timerState.timeInterval,
-      })
-      _updateStorage()
-      return
-    }
-
-    // Сохранить временной отрезок для текущего занятия на этот день
-    occupation.time = Number(occupation.time) + timerState.timeInterval
-    _updateStorage()
-  } else {
-    // Create and save new day object for next day
-    sessionStorage.days.push({
-      date: format(new Date(), 'HH:mm:ss yyyy/MM/dd'),
-      occupations: [
-        {
-          name: timerState.occupation.name,
-          time: 0,
-        },
-      ],
-    })
-    _updateStorage()
-
-    console.log('next day!')
-  }
-  console.log({...sessionStorage})
-}
+_update()
 
 const _stopTimer = () => {
   timerState.isActive = false
@@ -89,46 +64,50 @@ const _stopTimer = () => {
 }
 
 const _save = () => {
-  const lastDay = sessionStorage.days[sessionStorage.days.length - 1]
-  const isToday = isSameDay(
-    new Date(),
-    sessionStorage.days[sessionStorage.days.length - 1].date
-  )
-
-  const occupation = lastDay.occupations.find(
+  let occupation = dayProgress.occupations.find(
     (occ) => occ.name === timerState.occupation.name
   )
-  if (isToday) {
-    // Если во внешнем хранилище на сегодняшний день нет заданного типа занятия, указанного в timerState, то сохранить тип занятия во внешнее хранилище на последний день
-    if (!occupation) {
-      lastDay.occupations.push({
-        name: timerState.occupation.name,
-        time: timerState.timeInterval,
-      })
-      _updateStorage()
-      return
-    }
 
-    // Сохранить временной отрезок для текущего занятия на этот день
-    occupation.time = Number(occupation.time) + timerState.timeInterval
-    _updateStorage()
-  } else {
-    // Create and save new day object for next day
-    sessionStorage.days.push({
-      date: format(new Date(), 'HH:mm:ss yyyy/MM/dd'),
-      occupations: [
-        {
-          name: timerState.occupation.name,
-          time: timerState.timeInterval,
-        },
-      ],
+  if (!occupation) {
+    dayProgress.occupations.push({
+      name: timerState.occupation.name,
+      time: 0,
     })
-    _updateStorage()
-
-    console.log('next day!')
+    startTimeValue = 0
+    occupation = dayProgress.occupations.find(
+      (occ) => occ.name === timerState.occupation.name
+    )
   }
+
+  occupation.time = startTimeValue + timerState.timeInterval
+
+  _update()
 }
 
+const _autosave = () => {
+  timerState.timeInterval = Math.round(
+    (new Date() - timerState.startTime) / 1_000
+  )
+
+  let occupation = dayProgress.occupations.find(
+    (occ) => occ.name === timerState.occupation.name
+  )
+
+  if (!occupation) {
+    const newOccupation = {
+      name: timerState.occupation.name,
+      time: 0,
+    }
+    occupation = newOccupation
+    dayProgress.occupations.push(newOccupation)
+    startTimeValue = 0
+  }
+
+  occupation.time = startTimeValue + timerState.timeInterval
+  _update()
+}
+
+// App object
 const app = {
   getStorage() {
     return { ...sessionStorage }
@@ -158,7 +137,7 @@ const app = {
   addOccupation(name) {
     const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`
     sessionStorage.occupations.push({ name, color: randomColor })
-    _updateStorage()
+    _update()
   },
 
   switchTimer() {
@@ -166,15 +145,24 @@ const app = {
       _stopTimer()
       _save()
     } else {
-      // Start timer
+      _update()
+      const occupation = dayProgress.occupations.find(
+        (occ) => occ.name === timerState.occupation.name
+      )
+      if (!occupation) {
+        dayProgress.occupations.push({
+          name: timerState.occupation.name,
+          time: 0,
+        })
+        startTimeValue = 0
+      } else {
+        startTimeValue = Number(occupation.time)
+      }
+
       timerState.isActive = true
       timerState.startTime = new Date()
-      // TODO Запускать оповещения если включены
-      /* TODO 
-        -Обновлять каждые 2 минуты объект сегодняшнего дня в sessionStorage, 
-        -прибавлять прогресс в секундах и сохранять. 
-        -Если день сменился, то сохранять новый объект дня */
-      autosaveIntervalId = setInterval(_autosave, 2000)
+      timerState.timeInterval = 0
+      autosaveIntervalId = setInterval(_autosave, 120000)
     }
   },
 }
