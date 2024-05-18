@@ -3,6 +3,30 @@
 @taiwlind components;
 @tailwind utilities;
 
+::-webkit-scrollbar {
+  width: 18px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgba(185, 96, 96, .667);
+  background-clip: padding-box;
+  border: 5px solid rgba(0, 0, 0, 0);
+  border-radius: 15px;
+  margin-right: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9c7575;
+  background-clip: padding-box;
+  border: 5px solid rgba(0, 0, 0, 0);
+}
+
 button,
 a,
 input,
@@ -43,7 +67,7 @@ dialog[data-modal][open] {
 
 /* Top to Center animation */
 dialog[data-modal][open] {
-  animation: toCenter .5s cubic-bezier(0.19, 1, 0.22, 1);
+  animation: toCenter 0.5s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 @keyframes toCenter {
