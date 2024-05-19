@@ -3,8 +3,6 @@ import { format } from 'date-fns'
 import { isToday } from 'date-fns/isToday'
 import StorageAPI from './modules/StorageAPI'
 
-// Functions
-
 // Storage
 const Storage = new StorageAPI('localStorage')
 
@@ -36,6 +34,9 @@ const timerState = {
 
 let dayProgress = sessionStorage.days[sessionStorage.days.length - 1]
 
+
+// Internal methods
+
 const _updateDayProgress = () => {
   if (!isToday(dayProgress.date)) {
     const newDayProgress = {
@@ -47,7 +48,6 @@ const _updateDayProgress = () => {
   }
 }
 
-// Internal methods
 const _update = () => {
   _updateDayProgress()
   Storage.save(sessionStorage)
@@ -108,6 +108,7 @@ const _autosave = () => {
 }
 
 // App object
+
 const app = {
   getStorage() {
     return { ...sessionStorage }
@@ -115,8 +116,14 @@ const app = {
 
   getTimerStatus() {
     const timerStatus = {
-      startTime: format(timerState.startTime, 'HH:mm:ss'),
-      endTime: format(timerState.endTime, 'HH:mm:ss'),
+      isActive: timerState.isActive,
+      startPoint: timerState.startTime,
+      startTime: timerState.startTime
+        ? format(timerState.startTime, 'HH:mm:ss')
+        : undefined,
+      endTime: timerState.endTime
+        ? format(timerState.endTime, 'HH:mm:ss')
+        : undefined,
       timeInterval: timerState.timeInterval,
       occupation: timerState.occupation,
     }

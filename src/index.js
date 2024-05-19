@@ -6,6 +6,8 @@ import DOM from './app/modules/DOM'
 const container = document.querySelector('.container')
 const nav = container.querySelector('nav')
 const main = container.querySelector('main')
+const startStopBtn = main.querySelector( '[data-start-stop-btn]' )
+
 
 // FUNCTIONS ///////////////////////////////////////////////////////////////
 
@@ -14,3 +16,6 @@ const main = container.querySelector('main')
 window.app = app
 
 // BIND EVENTS ///////////////////////////////////////////////////////////
+startStopBtn.addEventListener('click', ()=>{
+  DOM.switchTimer()
+})
