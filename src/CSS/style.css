@@ -51,8 +51,8 @@ dialog::backdrop {
 }
 
 /* Fade in animation*/
-dialog[data-modal][open] {
-  animation: myFadeIn 1s ease normal;
+dialog[data-occupation-modal][open] {
+  animation: myFadeIn 0.5s ease normal;
 }
 
 @keyframes myFadeIn {
@@ -62,20 +62,5 @@ dialog[data-modal][open] {
 
   to {
     opacity: 1;
-  }
-}
-
-/* Top to Center animation */
-dialog[data-modal][open] {
-  animation: toCenter 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-}
-
-@keyframes toCenter {
-  from {
-    transform: translateY(-200%);
-  }
-
-  to {
-    transform: translateY(0%);
   }
 }

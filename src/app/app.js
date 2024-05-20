@@ -12,13 +12,14 @@ let startTimeValue = 0
 
 if (!sessionStorage) {
   const firstSave = {
-    occupations: [{ name: 'default', color: '#ff0000' }],
+    occupations: [{ name: 'Default', color: '#ff0000' }],
     days: [
       {
         date: format(new Date(), 'HH:mm:ss yyyy/MM/dd'),
-        occupations: [{ name: 'default', time: 0 }],
+        occupations: [{ name: 'Default', time: 0 }],
       },
     ],
+    dayActivity: [],
   }
   Storage.save(firstSave)
   sessionStorage = firstSave
@@ -34,6 +35,13 @@ const timerState = {
 
 let dayProgress = sessionStorage.days[sessionStorage.days.length - 1]
 
+// Functions
+
+const _formatSeconds = (seconds) => {
+  const str = new Date(1000 * seconds).toISOString()
+  const time = str.substring(str.indexOf('T') + 1, str.indexOf('.'))
+  return time
+}
 
 // Internal methods
 
@@ -107,6 +115,25 @@ const _autosave = () => {
   _update()
 }
 
+const _saveDayActivity = () => {
+  const timePeriod = {
+    start: timerState.startTime
+      ? format(timerState.startTime, 'HH:mm:ss')
+      : undefined,
+    end: timerState.endTime
+      ? format(timerState.endTime, 'HH:mm:ss')
+      : undefined,
+    time: _formatSeconds(timerState.timeInterval),
+    occupation: timerState.occupation,
+  }
+  if (isToday(timerState.startTime)) {
+    sessionStorage.dayActivity.push(timePeriod)
+  } else {
+    sessionStorage.dayActivity = []
+  }
+  _update()
+}
+
 // App object
 
 const app = {
@@ -151,6 +178,7 @@ const app = {
     if (timerState.isActive) {
       _stopTimer()
       _save()
+      _saveDayActivity()
     } else {
       _update()
       const occupation = dayProgress.occupations.find(
@@ -169,7 +197,12 @@ const app = {
       timerState.isActive = true
       timerState.startTime = new Date()
       timerState.timeInterval = 0
-      autosaveIntervalId = setInterval(_autosave, 120000)
+      autosaveIntervalId = setInterval(() => {
+        if (!isToday(timerState.startTime)) {
+          this.switchTimer()
+        }
+        _autosave()
+      }, 120000)
     }
   },
 }

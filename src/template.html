@@ -19,21 +19,38 @@
       >
         Time Tracker
       </header>
-      <main class="flex flex-col gap-3">
+      <main class="flex flex-col gap-3 relative">
         <div
           data-controls
           class="flex flex-wrap-reverse w-full gap-3 items-center px-5"
         >
           <button
             data-controls-occupation
-            class="rounded-full size-10 bg-[#999] border-2 border-border-color"
-          ></button>
+            class="rounded-full size-10 border-2 border-border-color"
+          >
+          <dialog data-occ-dialog class="bg-main-bg p-3 border-2 rounded-lg border-border-color transition-all">
+            <div class="dialog-inner-container flex flex-col flex-wrap" data-dialog-inner-container>
+              <ul data-occupations-list>
+              </ul>
+              <div data-add-occupation-btn type="button" class="underline">+ Add</div>
+            </div>
+          </dialog>
+        </button>
+
+        <dialog data-occupation-modal class="bg-main w-200 rounded-lg shadow-grey transition-all mx-auto transform -translate-y-1/2 top-1/2">
+          <div class="dialog-inner-container p-[15px] flex flex-wrap" data-dialog-inner-container>
+            <input data-new-occupation type="text" required class="w-full p-[2px] shadow-white rounded-md mb-5">
+            <button data-close-modal-btn class="bg-main-bg p-1 rounded-md shadow-grey-btn active:shadow-grey-btn-small active:translate-x-[1px] active:translate-y-[1px] hover:text-font-color transition-all">Close</button>
+            <button data-save-occupation-btn class="bg-main-bg p-1 rounded-md shadow-grey-btn active:shadow-grey-btn-small active:translate-x-[1px] active:translate-y-[1px] hover:text-font-color transition-all ml-auto">Save</button>
+          </div>
+        </dialog>
+
           <span data-occupation-name>Default</span>
 
           <div class="ml-auto flex items-center gap-3">
-            <div class="">
+            <div>
               Time: <br />
-              <span data-timer-output>00:00:00</span>
+              <span data-timer-output class="text-2xl font-mono">00:00:00</span>
             </div>
             <button
               data-start-stop-btn
@@ -46,22 +63,13 @@
 
         <div class="p-3 min-h-[30vh] max-h-[70vh] w-full rounded-md bg-main-bg shadow-grey mr-10 text-border-color overflow-scroll overflow-x-hidden">
           <h2 class="text-2xl">Done:</h2>
-          <div data-time-segments class="flex flex-col gap-2">
+          <ul data-time-segments class="flex flex-col gap-2">
 
-            <div time-segment class="bg-main-light rounded flex flex-wrap justify-between w-full gap-2 items-center p-3 shadow-grey-btn text-font-color">
-              <div>
-                <span data-begin-time>12:30</span>-<span data-end-time>12:53</span>
-              </div>
-              <span data-time-interval>23:13</span>
-              <div
-            data-occupation
-            class="rounded-full size-7 bg-[#999] border border-border-color"
-          ></div>
-            </div>
 
-          </div>
+          </ul>
         </div>
         </div>
+
       </main>
     </div>
   </body>
