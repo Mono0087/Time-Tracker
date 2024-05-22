@@ -11,7 +11,7 @@ const startStopBtn = main.querySelector('[data-start-stop-btn]')
 const occupationDialogBtn = main.querySelector('[data-controls-occupation]')
 const occupationDialog = main.querySelector('[data-occ-dialog]')
 const addOccupationBtn = main.querySelector('[data-add-occupation-btn]')
-const saveOccupationBtn = main.querySelector( '[data-save-occupation-btn]' )
+const saveOccupationBtn = main.querySelector('[data-save-occupation-btn]')
 
 // FUNCTIONS ///////////////////////////////////////////////////////////////
 
@@ -57,7 +57,13 @@ addOccupationBtn.addEventListener('click', () => {
   DOM.showOccupationModal()
 })
 
-saveOccupationBtn.addEventListener('click',()=>{
+saveOccupationBtn.addEventListener('click', () => {
   const occupation = main.querySelector('[data-new-occupation]').value
   DOM.addOccupation(occupation)
+})
+
+window.addEventListener('keydown', (Event) => {
+  if (Event.code === 'Space') {
+    DOM.switchTimer()
+  }
 })

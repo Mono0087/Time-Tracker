@@ -11,12 +11,13 @@ let autosaveIntervalId
 let startTimeValue = 0
 
 if (!sessionStorage) {
+  const defId = crypto.randomUUID()
   const firstSave = {
-    occupations: [{ name: 'Default', color: '#ff0000' }],
+    occupations: [{ name: 'Default', color: '#ff0000', id: defId }],
     days: [
       {
         date: format(new Date(), 'HH:mm:ss yyyy/MM/dd'),
-        occupations: [{ name: 'Default', time: 0 }],
+        occupations: [{ name: 'Default', time: 0, id: defId }],
       },
     ],
     dayActivity: [],
@@ -36,12 +37,6 @@ const timerState = {
 let dayProgress = sessionStorage.days[sessionStorage.days.length - 1]
 
 // Functions
-
-const _formatSeconds = (seconds) => {
-  const str = new Date(1000 * seconds).toISOString()
-  const time = str.substring(str.indexOf('T') + 1, str.indexOf('.'))
-  return time
-}
 
 // Internal methods
 
@@ -80,6 +75,7 @@ const _save = () => {
     dayProgress.occupations.push({
       name: timerState.occupation.name,
       time: 0,
+      id: timerState.occupation.id,
     })
     startTimeValue = 0
     occupation = dayProgress.occupations.find(
@@ -93,6 +89,11 @@ const _save = () => {
 }
 
 const _autosave = () => {
+  if (!isToday(timerState.startTime)) {
+    console.log('Next day!')
+    _stopTimer()
+    _save()
+  }
   timerState.timeInterval = Math.round(
     (new Date() - timerState.startTime) / 1_000
   )
@@ -105,6 +106,7 @@ const _autosave = () => {
     const newOccupation = {
       name: timerState.occupation.name,
       time: 0,
+      id: timerState.occupation.id,
     }
     occupation = newOccupation
     dayProgress.occupations.push(newOccupation)
@@ -118,13 +120,12 @@ const _autosave = () => {
 const _saveDayActivity = () => {
   const timePeriod = {
     start: timerState.startTime
-      ? format(timerState.startTime, 'HH:mm:ss')
+      ? format(timerState.startTime, 'HH:mm')
       : undefined,
-    end: timerState.endTime
-      ? format(timerState.endTime, 'HH:mm:ss')
-      : undefined,
-    time: _formatSeconds(timerState.timeInterval),
+    end: timerState.endTime ? format(timerState.endTime, 'HH:mm') : undefined,
+    time: timerState.timeInterval,
     occupation: timerState.occupation,
+    id: crypto.randomUUID(),
   }
   if (isToday(timerState.startTime)) {
     sessionStorage.dayActivity.push(timePeriod)
@@ -157,20 +158,62 @@ const app = {
     return timerStatus
   },
 
-  // eslint-disable-next-line consistent-return
-  setOccupation(name) {
+  setOccupation(id) {
     if (timerState.isActive)
       throw Error(
         'Error: Timer is active! Stop timer before changing occupation.'
       )
     timerState.occupation = sessionStorage.occupations.find(
-      (occupation) => occupation.name === name
+      (occupation) => occupation.id === id
     )
   },
 
   addOccupation(name) {
     const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`
-    sessionStorage.occupations.push({ name, color: randomColor })
+    sessionStorage.occupations.push({
+      name,
+      color: randomColor,
+      id: crypto.randomUUID(),
+    })
+    _update()
+  },
+
+  deleteOccupation(id) {
+    if (timerState.isActive)
+      throw Error(
+        'Error: Timer is active! Stop timer before changing occupation.'
+      )
+
+    sessionStorage.occupations = sessionStorage.occupations.filter(
+      (item) => item.id !== id
+    )
+    _update()
+  },
+
+  deleteSegment(occId, segmentId) {
+    if (timerState.isActive)
+      throw Error(
+        'Error: Timer is active! Stop timer before changing occupation.'
+      )
+
+    let segArrIndex
+    let time
+    sessionStorage.dayActivity.forEach((seg, i) => {
+      if (seg.id === segmentId) {
+        segArrIndex = i
+        time = seg.time
+      }
+    })
+
+    const lastDayId = sessionStorage.days.length - 1
+    sessionStorage.days[lastDayId].occupations.forEach((occ) => {
+      if (occ.id === occId) {
+        // eslint-disable-next-line no-param-reassign
+        occ.time = Number(occ.time) - Number(time)
+      }
+    })
+
+    sessionStorage.dayActivity.splice(segArrIndex, 1)
     _update()
   },
 
@@ -188,6 +231,7 @@ const app = {
         dayProgress.occupations.push({
           name: timerState.occupation.name,
           time: 0,
+          id: timerState.occupation.id,
         })
         startTimeValue = 0
       } else {

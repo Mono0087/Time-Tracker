@@ -7,12 +7,12 @@
     <link
       rel="icon"
       type="image/x-icon"
-      href="./assets/img/favicon/icons8-checklist-glyph-96.png"
+      href="./assets/img/favicon/timer-outline.svg"
     />
   </head>
   <body class="bg-main-bg p-[15px] font-mono">
     <div
-      class="container w-[calc(min(65ch,100vw_-_2rem))] h-fit flex flex-col gap-2 bg-main p-[15px] rounded-xl mx-auto absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 text-main-bg"
+      class="container w-[calc(min(80ch,100vw_-_2rem))] h-fit flex flex-col gap-2 bg-main p-[15px] rounded-xl mx-auto absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 text-main-bg"
     >
       <header
         class="border-b-2 border-dotted pb-2 border-border-color font-bold text-3xl"
@@ -26,11 +26,11 @@
         >
           <button
             data-controls-occupation
-            class="rounded-full size-10 border-2 border-border-color"
+            class="rounded-full size-10 border-2 border-border-color z-10"
           >
           <dialog data-occ-dialog class="bg-main-bg p-3 border-2 rounded-lg border-border-color transition-all">
-            <div class="dialog-inner-container flex flex-col flex-wrap" data-dialog-inner-container>
-              <ul data-occupations-list>
+            <div class="dialog-inner-container flex flex-col flex-wrap gap-2" data-dialog-inner-container>
+              <ul data-occupations-list class="text-left flex flex-col gap-2">
               </ul>
               <div data-add-occupation-btn type="button" class="underline">+ Add</div>
             </div>
@@ -54,7 +54,7 @@
             </div>
             <button
               data-start-stop-btn
-              class="bg-main-bg p-1 rounded-full w-[50px] h-[50px] shadow-grey-btn active:shadow-grey-btn-small active:translate-x-[1px] active:translate-y-[1px] hover:text-font-color transition-all text-border-color"
+              class="bg-main-bg p-1 rounded-full w-[50px] h-[50px] shadow-grey-btn active:shadow-grey-btn-small active:translate-x-[1px] active:translate-y-[1px] hover:text-font-color transition-all text-border-color text-xl"
             >
               >
             </button>
@@ -63,8 +63,7 @@
 
         <div class="p-3 min-h-[30vh] max-h-[70vh] w-full rounded-md bg-main-bg shadow-grey mr-10 text-border-color overflow-scroll overflow-x-hidden">
           <h2 class="text-2xl">Done:</h2>
-          <ul data-time-segments class="flex flex-col gap-2">
-
+          <ul data-time-segments class="flex flex-col gap-3">
 
           </ul>
         </div>
