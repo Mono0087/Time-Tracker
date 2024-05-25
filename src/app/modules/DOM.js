@@ -1,6 +1,13 @@
 import app from '../app'
 import createElement from '../utils/createElement'
 
+import ring from '../../assets/sound/Ring-sound-effect.mp3'
+import bell from '../../assets/sound/mixkit-clear-announce-tones-2861.wav'
+import digital from '../../assets/sound/mixkit-access-allowed-tone-2869.wav'
+import beep from '../../assets/sound/digital-camera-beeping-the-foundation-1-00-02.mp3'
+
+const audioArray = { ring, bell, digital, beep }
+
 const container = document.querySelector('.container')
 const main = container.querySelector('main')
 const startStopBtn = main.querySelector('[data-start-stop-btn]')
@@ -11,10 +18,14 @@ const occupationsUl = main.querySelector('[data-occupations-list]')
 const occModal = document.querySelector('[data-occupation-modal]')
 const closeModalBtn = document.querySelector('[data-close-modal-btn]')
 const timePeriodsContainer = main.querySelector('[data-time-segments]')
+const settingsModal = document.querySelector('[data-settings-modal')
+const closeSettingsBtn = document.querySelector('[data-close-settings-btn]')
+const saveSettingsBtn = document.querySelector('[data-save-settings-btn]')
 
 let { occupation } = app.getTimerStatus()
 let timerIntervalId
 let timerCheckIntervalId
+let soundIntervalId
 let currentTimer = {
   hours: 0,
   minutes: 0,
@@ -111,7 +122,7 @@ const _showTimePeriods = () => {
       app.deleteSegment(occupationId, periodId)
       _showTimePeriods()
     })
-    timePeriodsContainer.append(li)
+    timePeriodsContainer.prepend(li)
   })
 }
 
@@ -119,6 +130,7 @@ const _stopTimer = () => {
   startStopBtn.innerHTML = '>'
   clearInterval(timerIntervalId)
   clearInterval(timerCheckIntervalId)
+  clearInterval(soundIntervalId)
   currentTimer = { hours: 0, minutes: 0, seconds: 0 }
   timerOutput.innerHTML = '00:00:00'
 }
@@ -173,8 +185,19 @@ const DOM = {
       _showTimePeriods()
     } else {
       startStopBtn.innerHTML = '||'
-
       timerIntervalId = setInterval(_updateTimer, 1000)
+
+      const { settings } = app.getStorage()
+      const audioName = settings.sound
+      const interval = Number(settings.interval) * 60000
+      const active = settings.on
+      const myAudio = new Audio(audioArray[audioName])
+      if (active) {
+        soundIntervalId = setInterval(() => {
+          myAudio.play()
+        }, interval)
+      }
+
       timerCheckIntervalId = setInterval(() => {
         const status = app.getTimerStatus()
         if (!status.isActive) {
@@ -207,6 +230,44 @@ const DOM = {
     if (name) app.addOccupation(name)
     occModal.close()
     this.renderDOM()
+  },
+
+  showSettingsModal() {
+    if (app.getTimerStatus().isActive)
+      throw Error('Timer is active! Stop timer before open settings.')
+    settingsModal.showModal()
+
+    const { settings } = app.getStorage()
+    const soundInput = settingsModal.querySelector('[data-sound-type]')
+    const onOff = settingsModal.querySelector('[data-sound-active]')
+    const interval = settingsModal.querySelector('[data-sound-interval]')
+
+    ;[...soundInput.children].forEach((opt) => {
+      opt.removeAttribute('selected')
+      if (opt.value === settings.sound) {
+        opt.setAttribute('selected', '')
+      }
+    })
+
+    onOff.checked = settings.on
+    interval.value = Number(settings.interval)
+
+    saveSettingsBtn.addEventListener('click', () => {
+      const settingsObj = {
+        sound: soundInput.value,
+        on: onOff.checked,
+        interval: interval.value,
+      }
+      app.changeSettings(settingsObj)
+    })
+
+    settingsModal.addEventListener('click', (Event) => {
+      modalHandler(Event, settingsModal)
+    })
+
+    closeSettingsBtn.addEventListener('click', () => {
+      settingsModal.close()
+    })
   },
 }
 

@@ -51,7 +51,7 @@ dialog::backdrop {
 }
 
 /* Fade in animation*/
-dialog[data-occupation-modal][open] {
+dialog[data-modal][open] {
   animation: myFadeIn 0.5s ease normal;
 }
 

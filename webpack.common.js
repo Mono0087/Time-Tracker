@@ -27,6 +27,13 @@ module.exports = {
         },
       },
       {
+        test: /\.(mp3|wav)$/i,
+        type: 'asset/resource',
+        generator: {
+          filename: 'sound/[name].[hash][ext][query]',
+        },
+      },
+      {
         test: /\.(woff2|woff)$/i,
         type: 'asset/resource',
         generator: {

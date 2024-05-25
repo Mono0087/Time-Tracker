@@ -12,6 +12,7 @@ const occupationDialogBtn = main.querySelector('[data-controls-occupation]')
 const occupationDialog = main.querySelector('[data-occ-dialog]')
 const addOccupationBtn = main.querySelector('[data-add-occupation-btn]')
 const saveOccupationBtn = main.querySelector('[data-save-occupation-btn]')
+const settingsBtn = container.querySelector('[data-settings-btn]')
 
 // FUNCTIONS ///////////////////////////////////////////////////////////////
 
@@ -67,3 +68,5 @@ window.addEventListener('keydown', (Event) => {
     DOM.switchTimer()
   }
 })
+
+settingsBtn.addEventListener('click', DOM.showSettingsModal)

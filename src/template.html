@@ -17,8 +17,35 @@
       <header
         class="border-b-2 border-dotted pb-2 border-border-color font-bold text-3xl"
       >
-        Time Tracker
+        <h1>Time Tracker</h1>
       </header>
+      <button data-settings-btn class="size-3 text-5xl absolute right-[25px] top-0 hover:text-[#e3d1d1] transition-al" id="settings-btn">⚙</button>
+
+      <dialog data-settings-modal data-modal class="bg-main w-200 rounded-lg shadow-grey transition-all mx-auto transform -translate-y-1/2 top-1/2">
+        <div class="dialog-inner-container p-[15px] flex flex-wrap flex-col gap-2 text-main-bg" data-dialog-inner-container>
+            <h2 class="text-2xl">Settings</h2>
+            <div id="notifaications-settings" class="flex flex-col pl-2 gap-1">
+              <h3>Notification sound:</h3>
+              <select data-sound-type name="sound" class="border-2 border-border-color rounded-md text-font-color">
+                <option value="ring">ring</option>
+                <option value="bell">bell</option>
+                <option value="digital">digital</option>
+                <option value="beep">beep</option>
+              </select>
+              <label for="soundOn">On/Off notifications:
+                <input name="soundOn" data-sound-active type="checkbox">
+              </label>
+              <label for="interval">Time interval(minutes):
+                <input data-sound-interval type="number" min="1" max="60" class="text-font-color rounded-md pl-1">
+              </label>
+            </div>
+            <div class="flex justify-between">
+              <button data-close-settings-btn class="bg-main-bg p-1 rounded-md text-border-color shadow-grey-btn active:shadow-grey-btn-small active:translate-x-[1px] active:translate-y-[1px] hover:text-font-color transition-all">Close</button>
+              <button data-save-settings-btn class="bg-main-bg p-1 rounded-md text-border-color shadow-grey-btn active:shadow-grey-btn-small active:translate-x-[1px] active:translate-y-[1px] hover:text-font-color transition-all ml-auto">Save</button>
+            </div>
+          </div>
+        </dialog>
+
       <main class="flex flex-col gap-3 relative">
         <div
           data-controls
@@ -37,7 +64,7 @@
           </dialog>
         </button>
 
-        <dialog data-occupation-modal class="bg-main w-200 rounded-lg shadow-grey transition-all mx-auto transform -translate-y-1/2 top-1/2">
+        <dialog data-occupation-modal data-modal class="bg-main w-200 rounded-lg shadow-grey transition-all mx-auto transform -translate-y-1/2 top-1/2">
           <div class="dialog-inner-container p-[15px] flex flex-wrap" data-dialog-inner-container>
             <input data-new-occupation type="text" required class="w-full p-[2px] shadow-white rounded-md mb-5">
             <button data-close-modal-btn class="bg-main-bg p-1 rounded-md shadow-grey-btn active:shadow-grey-btn-small active:translate-x-[1px] active:translate-y-[1px] hover:text-font-color transition-all">Close</button>

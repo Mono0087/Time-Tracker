@@ -21,6 +21,7 @@ if (!sessionStorage) {
       },
     ],
     dayActivity: [],
+    settings: { sound: 'ring', interval: 1, on: true },
   }
   Storage.save(firstSave)
   sessionStorage = firstSave
@@ -46,6 +47,7 @@ const _updateDayProgress = () => {
       date: format(new Date(), 'HH:mm:ss yyyy/MM/dd'),
       occupations: [],
     }
+    sessionStorage.dayActivity = []
     sessionStorage.days.push(newDayProgress)
     dayProgress = newDayProgress
   }
@@ -214,6 +216,11 @@ const app = {
     })
 
     sessionStorage.dayActivity.splice(segArrIndex, 1)
+    _update()
+  },
+
+  changeSettings(settingsObj) {
+    sessionStorage.settings = settingsObj
     _update()
   },
 
